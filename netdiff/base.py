@@ -1,4 +1,5 @@
 import json
+from networkx.readwrite import json_graph
 
 
 class BaseParser(object):
@@ -67,3 +68,7 @@ class BaseParser(object):
         else:
             # if cost is not false return the edges with the data
             return diff.edges(data=True)
+
+    def gen_graph():
+        graph = json_graph.node_link_data(self.new_graph)
+        return json.dumps(graph)

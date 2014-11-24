@@ -69,6 +69,6 @@ class BaseParser(object):
             # if cost is not false return the edges with the data
             return diff.edges(data=True)
 
-    def gen_graph():
+    def gen_graph(self):
         graph = json_graph.node_link_data(self.new_graph)
         return json.dumps(graph)

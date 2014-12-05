@@ -29,7 +29,7 @@ class TestOlsr1Parser(TestCase):
 
     def test_diff_json(self):
         parser = Olsr1Parser(old=links3, new=links3)
-        result = parser.diff_json(sort_keys=True, indent=4)
+        result = parser.diff(python=False, sort_keys=True, indent=4)
         # ensure str
         self.assertTrue(type(result) is str)
         # ensure is json decodable

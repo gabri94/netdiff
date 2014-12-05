@@ -1,37 +1,54 @@
 import json
+import networkx as nx
 from networkx.readwrite import json_graph
 
 
 class BaseParser(object):
     """ Generic Topology Parser """
 
-    def __init__(self, old, new):
+    def __init__(self, old=None, new=None, oldint=None, newint=None):
         """
         Initializes a new Parser
 
         :param str old: a JSON or dict representing the old topology
         :param str new: a JSON or dict representing the new topology
         """
-        self.old_graph = self._parse(old)
-        self.new_graph = self._parse(new)
+        if old:
+            self.old_graph = self._parse(old)
+        else:
+            if oldint:
+                self.old_graph = self._parse_netjson(oldint)
+            else:
+                self.old_graph = nx.Graph()
 
-    def diff(self, cost=False):
+        if new:
+            self.new_graph = self._parse(new)
+        else:
+            if newint:
+                self.new_graph = self._parse_netjson(newint)
+            else:
+                self.new_graph = nx.Graph()
+
+    def diff(self, cost=False, python=True, **kwargs):
         """
         Returns netdiff in a python dictionary
         """
-
-        return {
-            "added": self._make_diff(self.new_graph, self.old_graph, cost),
-            "removed": self._make_diff(self.old_graph, self.new_graph, cost)
-        }
-
-    def diff_json(self, **kwargs):
-        """
-        Returns netdiff in a JSON string
-        """
-        return json.dumps(self.diff(), **kwargs)
+        if python:
+            return {
+                "added": self._make_diff(self.new_graph, self.old_graph, cost),
+                "removed": self._make_diff(self.old_graph, self.new_graph, cost)
+            }
+        else:
+            return json.dumps(self.diff(cost),  **kwargs)
 
     # --- private methods --- #
+
+    def _parse_netjson(self, topology):
+        # https://github.com/interop-dev/json-for-networks/blob/master/examples/network-routes.json
+        graph = nx.Graph()
+        for link in topology['routes']:
+            graph.add_edge(link['source'], link['next'], weight=link['cost'])
+        return graph
 
     def _parse(self):
         raise NotImplementedError()
@@ -62,6 +79,7 @@ class BaseParser(object):
                             not_different.append(old_edge)
         # keep only differences
         diff.remove_edges_from(not_different)
+
         # return list of links
         if not cost:
             return diff.edges()
@@ -70,5 +88,15 @@ class BaseParser(object):
             return diff.edges(data=True)
 
     def gen_graph(self):
+        node_bc = nx.betweenness_centrality(self.new_graph, weight="weight")
+        node_dc = nx.degree_centrality(self.new_graph)
+        edge_bc = nx.edge_betweenness_centrality(self.new_graph, weight="weight")
+        nx.set_edge_attributes(self.new_graph, 'betweenness', edge_bc)
+
+        for node in self.new_graph.nodes():
+            self.new_graph.node[node]["bw"] = node_bc[node]
+            self.new_graph.node[node]["dc"] = node_dc[node]
+        # print self.new_graph.edges(data=True)
+
         graph = json_graph.node_link_data(self.new_graph)
         return json.dumps(graph)

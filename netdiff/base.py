@@ -80,12 +80,8 @@ class BaseParser(object):
         # keep only differences
         diff.remove_edges_from(not_different)
 
-        # return list of links
-        if not cost:
-            return diff.edges()
-        else:
-            # if cost is not false return the edges with the data
-            return diff.edges(data=True)
+    # return the edges with the data
+        return diff.edges(data=True)
 
     def gen_graph(self):
         node_bc = nx.betweenness_centrality(self.new_graph, weight="weight")

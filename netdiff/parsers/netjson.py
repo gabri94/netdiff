@@ -1,7 +1,7 @@
 import networkx
 
 from .base import BaseParser
-from ..exceptions import NetParserException
+from ..exceptions import ParserError
 
 
 class NetJsonParser(BaseParser):
@@ -9,31 +9,38 @@ class NetJsonParser(BaseParser):
 
     def parse(self, data):
         """
-        Converts a NetJSON 'NetworkGraph' object in a NetworkX Graph object.
+        Converts a NetJSON 'NetworkGraph' object
+        to a NetworkX Graph object,which is then returned.
+        Additionally checks for protocol version, revision and metric.
         """
         graph = networkx.Graph()
         # ensure is NetJSON NetworkGraph object
         if 'type' not in data or data['type'] != 'NetworkGraph':
-            raise NetParserException('Parse error, not a NetworkGraph object')
+            raise ParserError('Parse error, not a NetworkGraph object')
         # ensure required keys are present
         required_keys = ['protocol', 'version', 'metric', 'nodes', 'links']
         for key in required_keys:
             if key not in data:
-                raise NetParserException('Parse error, "{0}" key not found'.format(key))
+                raise ParserError('Parse error, "{0}" key not found'.format(key))
+
         # store metadata
         self.protocol = data['protocol']
         self.version = data['version']
         self.revision = data.get('revision')  # optional
         self.metric = data['metric']
-        # add nodes
+
+        # create graph
         for node in data['nodes']:
-            graph.add_node(node['id'])
+            graph.add_node(node['id'],
+                           local_addresses=node.get('local_addresses', []),
+                           **node.get('properties', {}))
         for link in data['links']:
             try:
                 source = link["source"]
                 dest = link["target"]
-                cost = link["weight"]
+                cost = link["cost"]
             except KeyError as e:
-                raise NetParserException('Parse error, "%s" key not found' % e)
-            graph.add_edge(source, dest, weight=cost)
-        self.graph = graph
+                raise ParserError('Parse error, "%s" key not found' % e)
+            properties = link.get('properties', {})
+            graph.add_edge(source, dest, weight=cost, **properties)
+        return graph

@@ -1,55 +1,47 @@
 {
     "topology": [
         {
-            "lastHopIP": "10.150.0.2",
-            "destinationIP": "10.150.0.3",
+            "destinationIP": "10.150.0.2",
+            "lastHopIP": "10.150.0.3",
             "linkQuality": 0.195,
             "neighborLinkQuality": 0.184,
-            "tcEdgeCost": 28334,
+            "tcEdgeCost": 1024,
             "validityTime": 284572
         },
         {
+            "destinationIP": "10.150.0.3",
+            "lastHopIP": "10.150.0.4",
+            "linkQuality": 1.0,
+            "neighborLinkQuality": 1.0,
+            "tcEdgeCost": 2048,
+            "validityTime": 284572
+        },
+        {
+            "destinationIP": "10.150.0.6",
             "lastHopIP": "10.150.0.3",
-            "destinationIP": "10.150.0.4",
             "linkQuality": 1.0,
             "neighborLinkQuality": 1.0,
             "tcEdgeCost": 1024,
             "validityTime": 284572
-        }
-    ],
-    "mid": [
-        {
-            "ipAddress": "10.150.0.2",
-            "aliases": [
-                {
-                    "ipAddress": "172.16.192.2",
-                    "validityTime": 286445
-                },
-                {
-                    "ipAddress": "192.168.0.2",
-                    "validityTime": 286445
-                }
-            ]
         },
         {
-            "ipAddress": "10.150.0.3",
-            "aliases": [
-                {
-                    "ipAddress": "172.16.192.3",
-                    "validityTime": 286445
-                }
-            ]
+            "destinationIP": "10.150.0.7",
+            "lastHopIP": "10.150.0.3",
+            "linkQuality": 1.0,
+            "neighborLinkQuality": 1.0,
+            "tcEdgeCost": 1540,
+            "validityTime": 284572
         },
         {
-            "ipAddress": "10.150.0.4",
-            "aliases": [
-                {
-                    "ipAddress": "172.16.192.4",
-                    "validityTime": 286445
-                }
-            ]
+            "destinationIP": "10.150.0.6",
+            "lastHopIP": "10.150.0.7",
+            "linkQuality": 1.0,
+            "neighborLinkQuality": 1.0,
+            "tcEdgeCost": 3600,
+            "validityTime": 284572
         }
     ],
+    "mid": [],
     "config": {
         "olsrPort":698,
         "debugLevel":0,

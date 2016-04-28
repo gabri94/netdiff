@@ -6,25 +6,49 @@
     "metric": "ETX",
     "nodes": [
         {
-            "id": "10.150.0.3"
+            "id": "10.150.0.3",
+            "local_addresses": [
+                "192.168.1.3"
+            ],
+            "properties": {
+                "hostname": "router.3nnx"
+            }
         },
         {
-            "id": "10.150.0.2"
+            "id": "10.150.0.2",
+            "local_addresses": [
+                "192.168.1.2"
+            ],
+            "properties": {
+                "hostname": "router2.nnx"
+            }
         },
         {
-            "id": "10.150.0.4"
+            "id": "10.150.0.4",
+            "local_addresses": [
+                "192.168.1.3"
+            ],
+            "properties": {
+                "hostname": "router4.nnx"
+            }
         }
     ],
     "links": [
         {
             "source": "10.150.0.3",
             "target": "10.150.0.2",
-            "weight": 28334
+            "cost": 28334,
+            "properties": {
+                "custom_property": true
+            }
         },
         {
             "source": "10.150.0.3",
             "target": "10.150.0.4",
-            "weight": 1024
+            "cost": 1024,
+            "properties": {
+                "custom_property": true
+            }
         }
     ]
 }

@@ -1,7 +1,7 @@
-import networkx
-import libcnml
 import os
 import six
+import networkx
+import libcnml
 
 try:
     import urlparse
@@ -9,34 +9,34 @@ except ImportError:
     import urllib.parse as urlparse
 
 from .base import BaseParser
-from ..exceptions import NetParserException
+from ..exceptions import ParserError
 
 
 class CnmlParser(BaseParser):
     """ CNML 0.1 parser """
     protocol = 'static'
-    version = '0.1'
+    version = None
     metric = None
 
-    def _to_python(self, data):
+    def to_python(self, data):
         if isinstance(data, six.string_types):
             up = urlparse.urlparse(data)
             # if it looks like a file path
             if os.path.isfile(data) or up.scheme in ['http', 'https']:
                 return libcnml.CNMLParser(data)
             else:
-                raise NetParserException('Could not decode CNML data')
+                raise ParserError('Could not decode CNML data')
         elif isinstance(data, libcnml.CNMLParser):
             return data
         else:
-            raise NetParserException('Could not find valid data to parse')
+            raise ParserError('Could not find valid data to parse')
 
     def parse(self, data):
         """
-        Extract information from a CNML file to generate a NetworkX Graph object.
+        Converts a CNML structure to a NetworkX Graph object
+        which is then returned.
         """
         graph = networkx.Graph()
-
         # loop over links and create networkx graph
         # Add only working nodes with working links
         for link in data.get_inner_links():
@@ -47,5 +47,4 @@ class CnmlParser(BaseParser):
             dest = interface_b.ipv4
             # add link to Graph
             graph.add_edge(source, dest, weight=1)
-
-        self.graph = graph
+        return graph
